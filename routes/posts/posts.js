@@ -40,10 +40,40 @@ router.get(
   }
 );
 
+router.patch(
+  '/:uuid',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    const { title, description } = req.body;
+    const post = await models.Post.findOne({
+      where: {
+        uuid: req.params.uuid,
+        UserId: req.user.id,
+      },
+    });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'Could not find post' });
+    }
+
+    if (title) {
+      post.title = title;
+    }
+    if (description) {
+      post.message = description;
+    }
+
+    await post.save();
+
+    res.status(200).json(post);
+  }
+);
+
 router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
-
   [
     check('title').not().isEmpty().withMessage('Title is required'),
     check('description').not().isEmpty().withMessage('Description is required'),
