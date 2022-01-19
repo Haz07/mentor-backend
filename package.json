@@ -19,6 +19,8 @@
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
+    "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
     "pg": "^8.7.1",
     "sequelize": "^6.13.0",
     "sequelize-auto-migrations-v2": "^1.2.1",
