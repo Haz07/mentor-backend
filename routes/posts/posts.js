@@ -40,6 +40,24 @@ router.get(
   }
 );
 
+router.post(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  [
+    check('title').not().isEmpty().withMessage('Title is required'),
+    check('description').not().isEmpty().withMessage('Description is required'),
+  ],
+  validate,
+  async (req, res) => {
+    const post = await models.Post.create({
+      title: req.body.title,
+      message: req.body.description,
+      UserId: req.user.id,
+    });
+    res.status(200).json(post);
+  }
+);
+
 router.patch(
   '/:uuid',
   passport.authenticate('jwt', { session: false }),
@@ -71,22 +89,23 @@ router.patch(
   }
 );
 
-router.post(
-  '/',
+router.delete(
+  '/:uuid',
   passport.authenticate('jwt', { session: false }),
-  [
-    check('title').not().isEmpty().withMessage('Title is required'),
-    check('description').not().isEmpty().withMessage('Description is required'),
-  ],
-  validate,
   async (req, res) => {
-    const post = await models.Post.create({
-      title: req.body.title,
-      message: req.body.description,
-      UserId: req.user.id,
+    const post = await models.Post.destroy({
+      where: {
+        uuid: req.params.uuid,
+        UserId: req.user.id,
+      },
     });
-    res.status(200).json(post);
+    if (post === 0) {
+      return res
+        .status(404)
+        .json({ success: false, msg: "Couldn't find post" });
+    }
+
+    res.status(200).json({ success: true });
   }
 );
-
 module.exports = router;
