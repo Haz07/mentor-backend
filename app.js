@@ -5,9 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
 
+const passport = require('passport');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users/users');
 var authRouter = require('./routes/auth/auth');
+var postRouter = require('./routes/posts/posts');
 
 var app = express();
 
@@ -18,12 +21,18 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+require('./config/passport')(passport);
+
+app.use(passport.initialize());
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/posts', postRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
