@@ -17,6 +17,24 @@ router.get(
         model: models.User,
         attributes: ['firstName', 'lastName'],
       },
+      where: {
+        UserId: req.user.id,
+      },
+    });
+    res.status(200).json(posts);
+  }
+);
+
+router.get(
+  '/all',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    const posts = await models.Post.findAll({
+      attributes: ['uuid', 'message', 'title', 'createdAt'],
+      include: {
+        model: models.User,
+        attributes: ['firstName', 'lastName'],
+      },
     });
     res.status(200).json(posts);
   }
